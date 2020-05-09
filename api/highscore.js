@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get("/", (req, res) => {
     const guide = {
-        example: "/api/highscore/players&type=0",
+        example: "/api/highscore/players?type=0",
         category: ["players", "alliances"],
         type: {
             0: "Total",

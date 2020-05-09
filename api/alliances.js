@@ -27,7 +27,7 @@ router.get("/", (req, res) => {
                             tag: a.$.tag,
                             founder: a.$.founder,
                             foundDate: a.$.foundDate,
-                            logo: a.$.logo,
+                            ...(a.$.logo && {logo: a.$.logo}),
                             ...(a.$.open && { open: true }),
                             ...(a.player && {players: a.player.map(p => p.$)})
                         })

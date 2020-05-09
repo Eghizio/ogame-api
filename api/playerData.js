@@ -12,6 +12,7 @@ router.get("/", (req, res) => {
 
     const { query: q } = req;
     const id = q.id ? q.id : "1";
+    // Instead of serving id=1, serve tree example with ?id=1
     
     axios.get(req.app.get("ogameAPI").playerData +"?id="+ id)
         .then(response => response.data)
