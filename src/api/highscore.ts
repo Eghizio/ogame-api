@@ -1,8 +1,7 @@
 // "/api/highscore"
 import express from "express";
 import axios from "axios";
-import { Parser } from "xml2js";
-import { Highscore } from "../types/api";
+import XMLParserService from "../services/XMLParserService";
 
 
 const router = express.Router();
@@ -28,17 +27,13 @@ router.get("/", (req, res) => {
 
 
 router.get("/players", (req, res) => {
-    const XML_Parser = new Parser();
 
     const { query: q } = req;
     const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
 
     axios.get(req.app.get("ogameAPI").highscore +"?category=1&type="+ type)
         .then(response => response.data)
-        .then(xml => 
-            XML_Parser.parseStringPromise(xml)
-                .catch(err => console.log("Error parsing XML ", err))
-                .then(parsedXML => parsedXML))
+        .then(xml => new XMLParserService().parse(xml))
         .then(json => {
             const orderedJSON = {
                 serverID: json.highscore.$.serverId,
@@ -55,17 +50,13 @@ router.get("/players", (req, res) => {
 });
 
 router.get("/alliances", (req, res) => {
-    const XML_Parser = new Parser();
 
     const { query: q } = req;
     const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
 
     axios.get(req.app.get("ogameAPI").highscore +"?category=2&type="+ type)
         .then(response => response.data)
-        .then(xml => 
-            XML_Parser.parseStringPromise(xml)
-                .catch(err => console.log("Error parsing XML ", err))
-                .then(parsedXML => parsedXML))
+        .then(xml => new XMLParserService().parse(xml))
         .then(json => {
             const orderedJSON = {
                 serverID: json.highscore.$.serverId,

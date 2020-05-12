@@ -2,14 +2,13 @@
 import { PlayerData } from "../types/api";
 import express from "express";
 import axios from "axios";
-import { Parser } from "xml2js";
+import XMLParserService from "../services/XMLParserService";
 
 
 const router = express.Router();
 
 // TODO highscore and alliance (test for id=[1, 100013, 101421])
 router.get("/", (req, res) => {
-    const XML_Parser = new Parser();
 
     const { query: q } = req;
     const id = q.id ? q.id : "1";
@@ -17,10 +16,7 @@ router.get("/", (req, res) => {
     
     axios.get(req.app.get("ogameAPI").playerData +"?id="+ id)
         .then(response => response.data)
-        .then(xml => 
-            XML_Parser.parseStringPromise(xml)
-                .catch(err => console.log("Error parsing XML ", err))
-                .then(parsedXML => parsedXML))
+        .then(xml => new XMLParserService().parse(xml))
         .then(json => {
             const orderedJSON: PlayerData = {
                 serverID: json.playerData.$.serverId,

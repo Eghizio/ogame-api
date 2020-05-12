@@ -2,8 +2,9 @@
 import { Players } from "../types/api";
 import express from "express";
 import axios from "axios";
-import { Parser } from "xml2js";
 import CacheService from "../services/CacheService";
+import XMLParserService from "../services/XMLParserService";
+
 
 
 const router = express.Router();
@@ -15,14 +16,9 @@ router.get("/", (req, res) => {
     if(cache.has(req.baseUrl))
         return res.json(cache.get(req.baseUrl));
 
-    const XML_Parser = new Parser();
-
     axios.get(req.app.get("ogameAPI").players)
         .then(response => response.data)
-        .then(xml => 
-            XML_Parser.parseStringPromise(xml)
-                .catch(err => console.log("Error parsing XML ", err))
-                .then(parsedXML => parsedXML))
+        .then(xml => new XMLParserService().parse(xml))
         .then(json => {
             const orderedJSON: Players = {
                 serverID: json.players.$.serverId,
