@@ -1,7 +1,6 @@
 // Simple permanent in memory cache
 class CacheService{
     cache: Map<string, any>
-
     constructor(){
         this.cache = new Map();
     }

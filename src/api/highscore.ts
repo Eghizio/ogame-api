@@ -2,9 +2,11 @@
 import express from "express";
 import axios from "axios";
 import XMLParserService from "../services/XMLParserService";
+import CacheService from "../services/CacheService";
 
 
 const router = express.Router();
+const cache = new CacheService();
 
 router.get("/", (req, res) => {
     const guide = {
@@ -28,6 +30,9 @@ router.get("/", (req, res) => {
 
 router.get("/players", (req, res) => {
 
+    if(cache.has(req.originalUrl))
+        return res.json(cache.get(req.originalUrl));
+
     const { query: q } = req;
     const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
 
@@ -45,11 +50,15 @@ router.get("/players", (req, res) => {
 
             return orderedJSON;
         })
+        .then(data => cache.set(req.originalUrl, data))
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
 });
 
 router.get("/alliances", (req, res) => {
+
+    if(cache.has(req.originalUrl))
+        return res.json(cache.get(req.originalUrl));
 
     const { query: q } = req;
     const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
@@ -68,6 +77,7 @@ router.get("/alliances", (req, res) => {
 
             return orderedJSON;
         })
+        .then(data => cache.set(req.originalUrl, data))
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
 });

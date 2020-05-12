@@ -3,12 +3,17 @@ import { PlayerData } from "../types/api";
 import express from "express";
 import axios from "axios";
 import XMLParserService from "../services/XMLParserService";
+import CacheService from "../services/CacheService";
 
 
 const router = express.Router();
+const cache = new CacheService();
 
 // TODO highscore and alliance (test for id=[1, 100013, 101421])
 router.get("/", (req, res) => {
+
+    if(cache.has(req.originalUrl))
+        return res.json(cache.get(req.originalUrl));
 
     const { query: q } = req;
     const id = q.id ? q.id : "1";
@@ -53,6 +58,7 @@ router.get("/", (req, res) => {
 
             return orderedJSON;
         })
+        .then(data => cache.set(req.originalUrl, data))
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
 });
