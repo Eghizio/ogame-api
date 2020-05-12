@@ -1,7 +1,8 @@
 // "/api/highscore"
-const express = require("express");
-const axios = require("axios");
-const { Parser } = require("xml2js");
+import express from "express";
+import axios from "axios";
+import { Parser } from "xml2js";
+import { Highscore } from "../types/api";
 
 
 const router = express.Router();
@@ -40,11 +41,11 @@ router.get("/players", (req, res) => {
                 .then(parsedXML => parsedXML))
         .then(json => {
             const orderedJSON = {
-                serverId: json.highscore.$.serverId,
+                serverID: json.highscore.$.serverId,
                 timestamp: json.highscore.$.timestamp,
                 category: json.highscore.$.category,
                 type: json.highscore.$.type,
-                players: [...json.highscore.player.map(({$}) => $)]
+                players: [...json.highscore.player.map((a: any) => a.$)]
             };
 
             return orderedJSON;
@@ -71,7 +72,7 @@ router.get("/alliances", (req, res) => {
                 timestamp: json.highscore.$.timestamp,
                 category: json.highscore.$.category,
                 type: json.highscore.$.type,
-                alliances: [...json.highscore.alliance.map(({$}) => $)]
+                alliances: [...json.highscore.alliance.map((a: any) => a.$)]
             };
 
             return orderedJSON;

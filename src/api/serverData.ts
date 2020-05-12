@@ -1,7 +1,7 @@
-// "/api/universes"
-const express = require("express");
-const axios = require("axios");
-const { Parser } = require("xml2js");
+// "/api/serverData"
+import express from "express";
+import axios from "axios";
+import { Parser } from "xml2js";
 
 
 const router = express.Router();
@@ -9,7 +9,7 @@ const router = express.Router();
 router.get("/", (req, res) => {
     const XML_Parser = new Parser();
     
-    axios.get(req.app.get("ogameAPI").universes)
+    axios.get(req.app.get("ogameAPI").serverData)
         .then(response => response.data)
         .then(xml => 
             XML_Parser.parseStringPromise(xml)
@@ -17,10 +17,14 @@ router.get("/", (req, res) => {
                 .then(parsedXML => parsedXML))
         .then(json => {
             const orderedJSON = {
-                serverID: json.universes.$.serverId,
-                timestamp: json.universes.$.timestamp,
-                universes: [...json.universes.universe.map(({$}) => $)]
+                serverID: json.serverData.$.serverId,
+                timestamp: json.serverData.$.timestamp,
             };
+
+            delete json.serverData.$;
+            for(const key of Object.keys(json.serverData)){
+                Object.assign(orderedJSON, {[key]: json.serverData[key][0]})
+            }
 
             return orderedJSON;
         })

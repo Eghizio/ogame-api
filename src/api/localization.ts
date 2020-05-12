@@ -1,7 +1,8 @@
 // "/api/localization"
-const express = require("express");
-const axios = require("axios");
-const { Parser } = require("xml2js");
+import { Localization } from "../types/api";
+import express from "express";
+import axios from "axios";
+import { Parser } from "xml2js";
 
 
 const router = express.Router();
@@ -16,7 +17,7 @@ router.get("/", (req, res) => {
                 .catch(err => console.log("Error parsing XML ", err))
                 .then(parsedXML => parsedXML))
         .then(json => {
-            const orderedJSON = {
+            const orderedJSON: Localization = {
                 serverID: json.localization.$.serverId,
                 timestamp: json.localization.$.timestamp,
                 buildings: [],
@@ -25,14 +26,14 @@ router.get("/", (req, res) => {
                 defense: [],
                 officers: [],
                 missions: [
-                    ...json.localization.missions[0].name.map(m => 
+                    ...json.localization.missions[0].name.map((m: any) => 
                         ({ name: m._, id: m.$.id })
                     )
                 ]
             };
             
-            json.localization.techs[0].name.map(t => ({ name: t._, id: t.$.id }))
-            .forEach(t => {
+            json.localization.techs[0].name.map((t: any) => ({ name: t._, id: t.$.id }))
+            .forEach((t: any) => {
                 //a lot of ifs, cause why the fuck not 
                 if(t.id <100)
                     orderedJSON.buildings.push(t);

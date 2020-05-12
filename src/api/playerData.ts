@@ -1,7 +1,8 @@
 // "/api/playerData"
-const express = require("express");
-const axios = require("axios");
-const { Parser } = require("xml2js");
+import { PlayerData } from "../types/api";
+import express from "express";
+import axios from "axios";
+import { Parser } from "xml2js";
 
 
 const router = express.Router();
@@ -21,7 +22,7 @@ router.get("/", (req, res) => {
                 .catch(err => console.log("Error parsing XML ", err))
                 .then(parsedXML => parsedXML))
         .then(json => {
-            const orderedJSON = {
+            const orderedJSON: PlayerData = {
                 serverID: json.playerData.$.serverId,
                 timestamp: json.playerData.$.timestamp,
                 player: {
@@ -29,13 +30,13 @@ router.get("/", (req, res) => {
                     name: json.playerData.$.name,
                     ...(json.playerData.positions[0] && {
                         highscore: [
-                            ...json.playerData.positions[0].position.map(h =>
+                            ...json.playerData.positions[0].position.map((h: any) =>
                                 ({ type: h.$.type, rank: h._, points: h.$.score, ships: h.$.ships })
                             )
                         ]
                     }),
                     planets: [
-                        ...json.playerData.planets[0].planet.map(p =>
+                        ...json.playerData.planets[0].planet.map((p: any) =>
                             ({  
                                 name: p.$.name, coords: p.$.coords, id: p.$.id,
                                 ...(p.moon && {

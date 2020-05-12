@@ -1,7 +1,8 @@
 // "/api/alliances"
-const express = require("express");
-const axios = require("axios");
-const { Parser } = require("xml2js");
+import { Alliances } from "../types/api";
+import express from "express";
+import axios from "axios";
+import { Parser } from "xml2js";
 
 
 const router = express.Router();
@@ -13,14 +14,14 @@ router.get("/", (req, res) => {
         .then(response => response.data)
         .then(xml => 
             XML_Parser.parseStringPromise(xml)
-                .catch(err => console.log("Error parsing XML ", err))
+                .catch((err: Error) => console.log("Error parsing XML ", err))
                 .then(parsedXML => parsedXML))
         .then(json => {
-            const orderedJSON = {
+            const orderedJSON: Alliances = {
                 serverID: json.alliances.$.serverId,
                 timestamp: json.alliances.$.timestamp,
                 alliances: [
-                    ...json.alliances.alliance.map(a => 
+                    ...json.alliances.alliance.map((a: any) => 
                         ({ 
                             id: a.$.id, 
                             name: a.$.name,
@@ -29,7 +30,7 @@ router.get("/", (req, res) => {
                             foundDate: a.$.foundDate,
                             ...(a.$.logo && {logo: a.$.logo}),
                             ...(a.$.open && { open: true }),
-                            ...(a.player && {players: a.player.map(p => p.$)})
+                            ...(a.player && {players: a.player.map((p: any) => p.$)})
                         })
                     )
                 ]

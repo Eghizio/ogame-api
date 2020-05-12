@@ -1,7 +1,8 @@
 // "/api/universe"
-const express = require("express");
-const axios = require("axios");
-const { Parser } = require("xml2js");
+import { Universe } from "../types/api";
+import express from "express";
+import axios from "axios";
+import { Parser } from "xml2js";
 
 
 const router = express.Router();
@@ -16,11 +17,11 @@ router.get("/", (req, res) => {
                 .catch(err => console.log("Error parsing XML ", err))
                 .then(parsedXML => parsedXML))
         .then(json => {
-            const orderedJSON = {
+            const orderedJSON: Universe = {
                 serverID: json.universe.$.serverId,
                 timestamp: json.universe.$.timestamp,
                 planets: [
-                    ...json.universe.planet.map(p =>
+                    ...json.universe.planet.map((p: any) =>
                         ({  
                             name: p.$.name, player: p.$.player, coords: p.$.coords, id: p.$.id,
                             ...(p.moon && {moon: { name: p.moon[0].$.name, size: p.moon[0].$.size, id: p.moon[0].$.id }})

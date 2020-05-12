@@ -1,23 +1,19 @@
 // "/api/players"
-const express = require("express");
-const axios = require("axios");
-const { Parser } = require("xml2js");
-const Cache = require("../utils/Cache");
+import { Players } from "../types/api";
+import express from "express";
+import axios from "axios";
+import { Parser } from "xml2js";
+import CacheService from "../services/CacheService";
+
 
 const router = express.Router();
-const cache = new Cache();
+const cache = new CacheService();
 
 router.get("/", (req, res) => {
-    // Need to move logs to cache, prolly will swap to use node-cache behind the Cache class
-    // Need to create services and extract the logic
-    console.log(`Calling "${req.baseUrl}"...`);
+    // console.log(`Calling "${req.baseUrl}"...`); // need to npm morgan for logs
 
-    if(cache.has(req.baseUrl)){
-        console.log(`Retrieving "${req.baseUrl}" from cache...`);
+    if(cache.has(req.baseUrl))
         return res.json(cache.get(req.baseUrl));
-    }
-
-    console.log(`No cache item found for ${req.baseUrl}`);
 
     const XML_Parser = new Parser();
 
@@ -28,10 +24,10 @@ router.get("/", (req, res) => {
                 .catch(err => console.log("Error parsing XML ", err))
                 .then(parsedXML => parsedXML))
         .then(json => {
-            const orderedJSON = {
+            const orderedJSON: Players = {
                 serverID: json.players.$.serverId,
                 timestamp: json.players.$.timestamp,
-                players: [...json.players.player.map(({$}) => $)]
+                players: [...json.players.player.map((p: any) => p.$)]
             };
 
             return orderedJSON;

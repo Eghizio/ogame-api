@@ -1,5 +1,5 @@
-const express = require("express");
-const bodyParser = require("body-parser");
+import express from "express";
+import bodyParser from "body-parser";
 
 
 const app = express();
@@ -20,7 +20,7 @@ const ogameAPI = {
 app.set("ogameAPI", ogameAPI);
 app.set("json spaces", 2);
 
-app.use("/api", require("./api"));
+app.use("/api", require("./src/api"));
 
 const PORT = process.env.PORT || 2137;
 app.listen(PORT, () => 
