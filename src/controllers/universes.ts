@@ -1,15 +1,12 @@
 // "/api/universes"
-import express from "express";
+import { RequestHandler } from "express";
 import fetch from "node-fetch";
-import { cache } from "../middlewares/cache";
 import { XMLParserService } from "../services/XMLParserService";
 import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
 import { Universes } from "../types/api";
 
 
-export const universesRouter = express.Router();
-
-universesRouter.get("/", cache(0), (req, res) => {
+const getUniverses: RequestHandler = (req, res) => {
 
     const URL = OGAME_API_ENDPOINTS.universes(TEMP_SERVER_ID);
         
@@ -27,4 +24,9 @@ universesRouter.get("/", cache(0), (req, res) => {
         })
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
-});
+};
+
+
+export const UniversesController = {
+    getUniverses,
+};

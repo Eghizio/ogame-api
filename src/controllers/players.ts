@@ -1,15 +1,12 @@
 // "/api/players"
-import express from "express";
+import { RequestHandler } from "express";
 import fetch from "node-fetch";
-import { cache } from "../middlewares/cache";
 import { XMLParserService } from "../services/XMLParserService";
 import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
 import { Players } from "../types/api";
 
 
-export const playersRouter = express.Router();
-
-playersRouter.get("/", cache(0), (req, res) => {
+const getPlayers: RequestHandler = (req, res) => {
     // console.log(`Calling "${req.originalUrl}"...`); // need to npm morgan for logs
 
     const URL = OGAME_API_ENDPOINTS.players(TEMP_SERVER_ID);
@@ -28,4 +25,9 @@ playersRouter.get("/", cache(0), (req, res) => {
         })
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
-});
+};
+
+
+export const PlayersController = {
+    getPlayers,
+};

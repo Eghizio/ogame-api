@@ -1,16 +1,12 @@
 // "/api/alliances"
-import express from "express";
+import { RequestHandler } from "express";
 import fetch from "node-fetch";
-import { cache } from "../middlewares/cache";
 import { XMLParserService } from "../services/XMLParserService";
 import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
 import { Alliances } from "../types/api";
 
 
-export const alliancesRouter = express.Router();
-
-
-alliancesRouter.get("/", cache(0), (req, res) => {
+const getAlliances: RequestHandler = (req, res) => {
 
     fetch(OGAME_API_ENDPOINTS.alliances(TEMP_SERVER_ID))
         .then(response => response.text())
@@ -39,4 +35,9 @@ alliancesRouter.get("/", cache(0), (req, res) => {
         })
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
-});
+};
+
+
+export const AlliancesController = {
+    getAlliances,
+};

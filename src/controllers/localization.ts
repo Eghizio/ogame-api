@@ -1,16 +1,12 @@
 // "/api/localization"
-import express from "express";
+import { RequestHandler } from "express";
 import fetch from "node-fetch";
-import { cache } from "../middlewares/cache";
 import { XMLParserService } from "../services/XMLParserService";
 import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
 import { Localization } from "../types/api";
 
 
-export const localizationRouter = express.Router();
-
-
-localizationRouter.get("/", cache(0), (req, res) => {
+const getLocalization: RequestHandler = (req, res) => {
         
     const URL = OGAME_API_ENDPOINTS.localization(TEMP_SERVER_ID);
 
@@ -52,4 +48,9 @@ localizationRouter.get("/", cache(0), (req, res) => {
         })
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
-});
+};
+
+
+export const LocalizationController = {
+    getLocalization,
+};

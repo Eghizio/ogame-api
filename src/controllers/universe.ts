@@ -1,16 +1,13 @@
 // "/api/universe"
-import express from "express";
+import { RequestHandler } from "express";
 import fetch from "node-fetch";
-import { cache } from "../middlewares/cache";
 import { XMLParserService } from "../services/XMLParserService";
 import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
 import { Universe } from "../types/api";
 
 
-export const universeRouter = express.Router();
-
 // split into galaxies? filtering by galaxies, systems, positions?
-universeRouter.get("/", cache(0), (req, res) => {
+const getUniverse: RequestHandler = (req, res) => {
 
     const URL = OGAME_API_ENDPOINTS.universe(TEMP_SERVER_ID);
         
@@ -35,4 +32,9 @@ universeRouter.get("/", cache(0), (req, res) => {
         })
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
-});
+};
+
+
+export const UniverseController = {
+    getUniverse,
+};

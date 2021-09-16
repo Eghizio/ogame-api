@@ -1,16 +1,12 @@
 // "/api/highscore"
-import express from "express";
+import { RequestHandler } from "express";
 import fetch from "node-fetch";
-import { cache } from "../middlewares/cache";
 import { XMLParserService } from "../services/XMLParserService";
 import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
 
 
-export const highscoreRouter = express.Router();
-
-
-highscoreRouter.get("/", (req, res) => {
-    const guide = {
+const getHighscoreLegend: RequestHandler = (req, res) => {
+    const legend = {
         example: "/api/highscore/players?type=0",
         category: ["players", "alliances"],
         type: {
@@ -25,11 +21,10 @@ highscoreRouter.get("/", (req, res) => {
         }
     };
 
-    res.json(guide);
-});
+    res.json(legend);
+};
 
-
-highscoreRouter.get("/players", cache(0), (req, res) => {
+const getHighscorePlayers: RequestHandler = (req, res) => {
 
     const { query: q } = req;
     const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
@@ -53,10 +48,10 @@ highscoreRouter.get("/players", cache(0), (req, res) => {
         })
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
-});
+};
 
-highscoreRouter.get("/alliances", cache(0), (req, res) => {
-
+const getHighscoreAlliances: RequestHandler = (req, res) => {
+    
     const { query: q } = req;
     const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
 
@@ -77,4 +72,11 @@ highscoreRouter.get("/alliances", cache(0), (req, res) => {
         })
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
-});
+};
+
+
+export const HighscoreController = {
+    getHighscoreLegend,
+    getHighscorePlayers,
+    getHighscoreAlliances,
+};

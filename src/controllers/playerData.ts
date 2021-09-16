@@ -1,16 +1,13 @@
 // "/api/playerData"
-import express from "express";
+import { RequestHandler } from "express";
 import fetch from "node-fetch";
-import { cache } from "../middlewares/cache";
 import { XMLParserService } from "../services/XMLParserService";
 import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
 import { PlayerData } from "../types/api";
 
 
-export const playerDataRouter = express.Router();
-
 // TODO highscore and alliance (test for id=[1, 100013, 101421])
-playerDataRouter.get("/", cache(0), (req, res) => {
+const getPlayerData: RequestHandler = (req, res) => {
 
     const { query: q } = req;
     const id = q.id ? q.id : "1";
@@ -59,4 +56,9 @@ playerDataRouter.get("/", cache(0), (req, res) => {
         })
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
-});
+};
+
+
+export const PlayerDataController = {
+    getPlayerData,
+};
