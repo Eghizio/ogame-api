@@ -6,24 +6,26 @@ import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
 import { Universes } from "../types/api";
 
 
-const getUniverses: RequestHandler = (req, res) => {
+const getUniverses: RequestHandler = async (req, res) => {
 
-    const URL = OGAME_API_ENDPOINTS.universes(TEMP_SERVER_ID);
-        
-    fetch(URL)
-        .then(response => response.text())
-        .then(xml => new XMLParserService().parseToJson(xml))
-        .then(json => {
-            const orderedJSON: Universes = {
-                serverID: json.universes.$.serverId,
-                timestamp: json.universes.$.timestamp,
-                universes: [...json.universes.universe.map((u: any) => u.$)]
-            };
+    try{
+        const URL = OGAME_API_ENDPOINTS.universes(TEMP_SERVER_ID);
 
-            return orderedJSON;
-        })
-        .then(formatedJSON => res.json(formatedJSON))
-        .catch(err => res.send(err));
+        const response = await fetch(URL);
+        const xml = await response.text();
+        const json = await new XMLParserService().parseToJson(xml);
+
+        const orderedJSON: Universes = {
+            serverID: json.universes.$.serverId,
+            timestamp: json.universes.$.timestamp,
+            universes: [...json.universes.universe.map((u: any) => u.$)]
+        };
+
+        return res.status(200).json(orderedJSON);
+    }
+    catch(error){
+        return res.status(500).send(error);
+    }
 };
 
 

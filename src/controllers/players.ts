@@ -6,25 +6,28 @@ import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
 import { Players } from "../types/api";
 
 
-const getPlayers: RequestHandler = (req, res) => {
-    // console.log(`Calling "${req.originalUrl}"...`); // need to npm morgan for logs
+const getPlayers: RequestHandler = async (req, res) => {
 
-    const URL = OGAME_API_ENDPOINTS.players(TEMP_SERVER_ID);
+    try{
+        // console.log(`Calling "${req.originalUrl}"...`); // need to npm morgan for logs
 
-    fetch(URL)
-        .then(response => response.text())
-        .then(xml => new XMLParserService().parseToJson(xml))
-        .then(json => {
-            const orderedJSON: Players = {
-                serverID: json.players.$.serverId,
-                timestamp: json.players.$.timestamp,
-                players: [...json.players.player.map((p: any) => p.$)]
-            };
+        const URL = OGAME_API_ENDPOINTS.players(TEMP_SERVER_ID);
 
-            return orderedJSON;
-        })
-        .then(formatedJSON => res.json(formatedJSON))
-        .catch(err => res.send(err));
+        const response = await fetch(URL);
+        const xml = await response.text();
+        const json = await new XMLParserService().parseToJson(xml);
+
+        const orderedJSON: Players = {
+            serverID: json.players.$.serverId,
+            timestamp: json.players.$.timestamp,
+            players: [...json.players.player.map((p: any) => p.$)]
+        };
+
+        return res.status(200).json(orderedJSON);
+    }
+    catch(error){
+        return res.status(500).send(error);
+    }
 };
 
 

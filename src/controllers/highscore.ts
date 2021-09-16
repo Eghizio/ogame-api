@@ -24,54 +24,58 @@ const getHighscoreLegend: RequestHandler = (req, res) => {
     res.json(legend);
 };
 
-const getHighscorePlayers: RequestHandler = (req, res) => {
+const getHighscorePlayers: RequestHandler = async (req, res) => {
 
-    const { query: q } = req;
-    const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
+    try{
+        const { query: q } = req;
+        const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
 
+        const URL = OGAME_API_ENDPOINTS.highscore(TEMP_SERVER_ID) + "?category=1&type=" + type;
 
-    const URL = OGAME_API_ENDPOINTS.highscore(TEMP_SERVER_ID) + "?category=1&type=" + type;
+        const response = await fetch(URL);
+        const xml = await response.text();
+        const json = await new XMLParserService().parseToJson(xml);
 
-    fetch(URL)
-        .then(response => response.text())
-        .then(xml => new XMLParserService().parseToJson(xml))
-        .then(json => {
-            const orderedJSON = {
-                serverID: json.highscore.$.serverId,
-                timestamp: json.highscore.$.timestamp,
-                category: json.highscore.$.category,
-                type: json.highscore.$.type,
-                players: [...json.highscore.player.map((a: any) => a.$)]
-            };
+        const orderedJSON = {
+            serverID: json.highscore.$.serverId,
+            timestamp: json.highscore.$.timestamp,
+            category: json.highscore.$.category,
+            type: json.highscore.$.type,
+            players: [...json.highscore.player.map((a: any) => a.$)]
+        };
 
-            return orderedJSON;
-        })
-        .then(formatedJSON => res.json(formatedJSON))
-        .catch(err => res.send(err));
+        return res.status(200).json(orderedJSON);
+    }
+    catch(error){
+        return res.status(500).send(error);
+    }
 };
 
-const getHighscoreAlliances: RequestHandler = (req, res) => {
+const getHighscoreAlliances: RequestHandler = async (req, res) => {
     
-    const { query: q } = req;
-    const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
+    try{
+        const { query: q } = req;
+        const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
+    
+        const URL = OGAME_API_ENDPOINTS.highscore(TEMP_SERVER_ID) + "?category=2&type=" + type;
 
-    const URL = OGAME_API_ENDPOINTS.highscore(TEMP_SERVER_ID) + "?category=2&type=" + type;
-    fetch(URL)
-        .then(response => response.text())
-        .then(xml => new XMLParserService().parseToJson(xml))
-        .then(json => {
-            const orderedJSON = {
-                serverID: json.highscore.$.serverId,
-                timestamp: json.highscore.$.timestamp,
-                category: json.highscore.$.category,
-                type: json.highscore.$.type,
-                alliances: [...json.highscore.alliance.map((a: any) => a.$)]
-            };
+        const response = await fetch(URL);
+        const xml = await response.text();
+        const json = await new XMLParserService().parseToJson(xml);
 
-            return orderedJSON;
-        })
-        .then(formatedJSON => res.json(formatedJSON))
-        .catch(err => res.send(err));
+        const orderedJSON = {
+            serverID: json.highscore.$.serverId,
+            timestamp: json.highscore.$.timestamp,
+            category: json.highscore.$.category,
+            type: json.highscore.$.type,
+            alliances: [...json.highscore.alliance.map((a: any) => a.$)]
+        };
+
+        return res.status(200).json(orderedJSON);
+    }
+    catch(error){
+        return res.status(500).send(error);
+    }
 };
 
 

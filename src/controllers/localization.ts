@@ -6,30 +6,32 @@ import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
 import { Localization } from "../types/api";
 
 
-const getLocalization: RequestHandler = (req, res) => {
-        
-    const URL = OGAME_API_ENDPOINTS.localization(TEMP_SERVER_ID);
+const getLocalization: RequestHandler = async (req, res) => {
 
-    fetch(URL)
-        .then(response => response.text())
-        .then(xml => new XMLParserService().parseToJson(xml))
-        .then(json => {
-            const orderedJSON: Localization = {
-                serverID: json.localization.$.serverId,
-                timestamp: json.localization.$.timestamp,
-                buildings: [],
-                research: [],
-                ships: [],
-                defense: [],
-                officers: [],
-                missions: [
-                    ...json.localization.missions[0].name.map((m: any) => 
-                        ({ name: m._, id: m.$.id })
-                    )
-                ]
-            };
-            
-            json.localization.techs[0].name.map((t: any) => ({ name: t._, id: t.$.id }))
+    try{
+        const URL = OGAME_API_ENDPOINTS.localization(TEMP_SERVER_ID);
+
+        const response = await fetch(URL);
+        const xml = await response.text();
+        const json = await new XMLParserService().parseToJson(xml);
+
+        const orderedJSON: Localization = {
+            serverID: json.localization.$.serverId,
+            timestamp: json.localization.$.timestamp,
+            buildings: [],
+            research: [],
+            ships: [],
+            defense: [],
+            officers: [],
+            missions: [
+                ...json.localization.missions[0].name.map((m: any) => 
+                    ({ name: m._, id: m.$.id })
+                )
+            ]
+        };
+
+        json.localization.techs[0].name
+            .map((t: any) => ({ name: t._, id: t.$.id }))
             .forEach((t: any) => {
                 //a lot of ifs, cause why the fuck not 
                 if(t.id <100)
@@ -44,10 +46,11 @@ const getLocalization: RequestHandler = (req, res) => {
                     orderedJSON.officers.push(t);
             });
 
-            return orderedJSON;
-        })
-        .then(formatedJSON => res.json(formatedJSON))
-        .catch(err => res.send(err));
+        return res.status(200).json(orderedJSON);
+    }
+    catch(error){
+        return res.status(500).send(error);
+    }
 };
 
 
