@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config(); // need to add dev/prod and logger
 import { createServer } from "./server";
 
 
