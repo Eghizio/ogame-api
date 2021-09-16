@@ -1,14 +1,15 @@
 // "/api/highscore"
 import express from "express";
-import axios from "axios";
-import XMLParserService from "../services/XMLParserService";
-import CacheService from "../services/CacheService";
+import fetch from "node-fetch";
+import { XMLParserService } from "../services/XMLParserService";
+import { CacheService } from "../services/CacheService";
+import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
 
 
-const router = express.Router();
+export const highscoreRouter = express.Router();
 const cache = new CacheService();
 
-router.get("/", (req, res) => {
+highscoreRouter.get("/", (req, res) => {
     const guide = {
         example: "/api/highscore/players?type=0",
         category: ["players", "alliances"],
@@ -28,7 +29,7 @@ router.get("/", (req, res) => {
 });
 
 
-router.get("/players", (req, res) => {
+highscoreRouter.get("/players", (req, res) => {
 
     if(cache.has(req.originalUrl))
         return res.json(cache.get(req.originalUrl));
@@ -36,9 +37,12 @@ router.get("/players", (req, res) => {
     const { query: q } = req;
     const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
 
-    axios.get(req.app.get("ogameAPI").highscore +"?category=1&type="+ type)
-        .then(response => response.data)
-        .then(xml => new XMLParserService().parse(xml))
+
+    const URL = OGAME_API_ENDPOINTS.highscore(TEMP_SERVER_ID) + "?category=1&type=" + type;
+
+    fetch(URL)
+        .then(response => response.text())
+        .then(xml => new XMLParserService().parseToJson(xml))
         .then(json => {
             const orderedJSON = {
                 serverID: json.highscore.$.serverId,
@@ -55,7 +59,7 @@ router.get("/players", (req, res) => {
         .catch(err => res.send(err));
 });
 
-router.get("/alliances", (req, res) => {
+highscoreRouter.get("/alliances", (req, res) => {
 
     if(cache.has(req.originalUrl))
         return res.json(cache.get(req.originalUrl));
@@ -63,9 +67,10 @@ router.get("/alliances", (req, res) => {
     const { query: q } = req;
     const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
 
-    axios.get(req.app.get("ogameAPI").highscore +"?category=2&type="+ type)
-        .then(response => response.data)
-        .then(xml => new XMLParserService().parse(xml))
+    const URL = OGAME_API_ENDPOINTS.highscore(TEMP_SERVER_ID) + "?category=2&type=" + type;
+    fetch(URL)
+        .then(response => response.text())
+        .then(xml => new XMLParserService().parseToJson(xml))
         .then(json => {
             const orderedJSON = {
                 serverID: json.highscore.$.serverId,
@@ -81,6 +86,3 @@ router.get("/alliances", (req, res) => {
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
 });
-
-
-module.exports = router;

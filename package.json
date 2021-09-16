@@ -5,7 +5,8 @@
   "main": "server.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node-dev --respawn server.ts",
+    "start": "ts-node src/index.ts",
+    "old-start": "ts-node-dev --respawn src/index.ts",
     "build": "tsc"
   },
   "keywords": [
@@ -17,16 +18,17 @@
   "author": "Eghizio",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.17.1",
+    "node-fetch": "^2.6.2",
+    "xml2js": "^0.4.22"
+  },
+  "devDependencies": {
     "@types/express": "^4.17.6",
     "@types/node": "^13.13.5",
     "@types/xml2js": "^0.4.5",
-    "axios": "^0.19.0",
-    "body-parser": "^1.19.0",
-    "express": "^4.17.1",
     "nodemon": "^1.19.3",
     "ts-node": "^8.10.1",
-    "ts-node-dev": "^1.0.0-pre.44",
-    "typescript": "^3.8.3",
-    "xml2js": "^0.4.22"
+    "ts-node-dev": "^1.1.8",
+    "typescript": "^3.8.3"
   }
 }

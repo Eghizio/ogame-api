@@ -1,5 +1,5 @@
 // Simple permanent in memory cache
-class CacheService{
+export class CacheService{
     cache: Map<string, any>
     constructor(){
         this.cache = new Map();
@@ -41,5 +41,3 @@ class CacheService{
         return this.cache.values();
     }
 }
-
-export default CacheService;

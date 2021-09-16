@@ -1,23 +1,26 @@
 // "/api/players"
-import { Players } from "../types/api";
 import express from "express";
-import axios from "axios";
-import CacheService from "../services/CacheService";
-import XMLParserService from "../services/XMLParserService";
+import fetch from "node-fetch";
+import { CacheService } from "../services/CacheService";
+import { XMLParserService } from "../services/XMLParserService";
+import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
+import { Players } from "../types/api";
 
 
-const router = express.Router();
+export const playersRouter = express.Router();
 const cache = new CacheService();
 
-router.get("/", (req, res) => {
+playersRouter.get("/", (req, res) => {
     // console.log(`Calling "${req.originalUrl}"...`); // need to npm morgan for logs
 
     if(cache.has(req.originalUrl))
         return res.json(cache.get(req.originalUrl));
 
-    axios.get(req.app.get("ogameAPI").players)
-        .then(response => response.data)
-        .then(xml => new XMLParserService().parse(xml))
+    const URL = OGAME_API_ENDPOINTS.players(TEMP_SERVER_ID);
+
+    fetch(URL)
+        .then(response => response.text())
+        .then(xml => new XMLParserService().parseToJson(xml))
         .then(json => {
             const orderedJSON: Players = {
                 serverID: json.players.$.serverId,
@@ -31,6 +34,3 @@ router.get("/", (req, res) => {
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
 });
-
-
-module.exports = router;

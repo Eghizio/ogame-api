@@ -1,10 +1,19 @@
 // "/api/highscore"
 import express from "express";
+import { alliancesRouter } from "./alliances";
+import { highscoreRouter } from "./highscore";
+import { localizationRouter } from "./localization";
+import { playerDataRouter } from "./playerData";
+import { playersRouter } from "./players";
+import { serverDataRouter } from "./serverData";
+import { universeRouter } from "./universe";
+import { universesRouter } from "./universes";
 
 
-const router = express.Router();
 
-router.get("/", (req, res) => {
+export const apiRouter = express.Router();
+
+apiRouter.get("/", (req, res) => {
     const Tree = {
         current: "/api",
         next: [
@@ -22,14 +31,11 @@ router.get("/", (req, res) => {
     res.json(Tree);
 });
 
-router.use("/alliances", require("./alliances"));
-router.use("/highscore", require("./highscore"));
-router.use("/localization", require("./localization"));
-router.use("/playerData", require("./playerData"));
-router.use("/players", require("./players"));
-router.use("/serverData", require("./serverData"));
-router.use("/universe", require("./universe"));
-router.use("/universes", require("./universes"));
-
-
-module.exports = router;
+apiRouter.use("/alliances", alliancesRouter);
+apiRouter.use("/highscore", highscoreRouter);
+apiRouter.use("/localization", localizationRouter);
+apiRouter.use("/playerData", playerDataRouter);
+apiRouter.use("/players", playersRouter);
+apiRouter.use("/serverData", serverDataRouter);
+apiRouter.use("/universe", universeRouter);
+apiRouter.use("/universes", universesRouter);

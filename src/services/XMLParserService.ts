@@ -1,13 +1,13 @@
 import { Parser } from "xml2js";
 
 
-class XMLParserService{
+export class XMLParserService{
     XML_Parser: Parser
     constructor(){
         this.XML_Parser = new Parser();
     }
     
-    async parse(xml: any){
+    async parseToJson(xml: any){
         const parsed = await this.XML_Parser.parseStringPromise(xml)
             .catch((err: Error) => console.log("Error parsing XML ", err))
             .then(parsedXML => parsedXML);
@@ -15,6 +15,3 @@ class XMLParserService{
         return parsed;
     }   
 }
-
-
-export default XMLParserService;

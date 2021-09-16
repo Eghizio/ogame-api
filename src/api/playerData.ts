@@ -1,16 +1,17 @@
 // "/api/playerData"
-import { PlayerData } from "../types/api";
 import express from "express";
-import axios from "axios";
-import XMLParserService from "../services/XMLParserService";
-import CacheService from "../services/CacheService";
+import fetch from "node-fetch";
+import { XMLParserService } from "../services/XMLParserService";
+import { CacheService } from "../services/CacheService";
+import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
+import { PlayerData } from "../types/api";
 
 
-const router = express.Router();
+export const playerDataRouter = express.Router();
 const cache = new CacheService();
 
 // TODO highscore and alliance (test for id=[1, 100013, 101421])
-router.get("/", (req, res) => {
+playerDataRouter.get("/", (req, res) => {
 
     if(cache.has(req.originalUrl))
         return res.json(cache.get(req.originalUrl));
@@ -18,10 +19,12 @@ router.get("/", (req, res) => {
     const { query: q } = req;
     const id = q.id ? q.id : "1";
     // Instead of serving id=1, serve tree example with ?id=1
+
+    const URL = OGAME_API_ENDPOINTS.playerData(TEMP_SERVER_ID) + "?id=" + id;
     
-    axios.get(req.app.get("ogameAPI").playerData +"?id="+ id)
-        .then(response => response.data)
-        .then(xml => new XMLParserService().parse(xml))
+    fetch(URL)
+        .then(response => response.text())
+        .then(xml => new XMLParserService().parseToJson(xml))
         .then(json => {
             const orderedJSON: PlayerData = {
                 serverID: json.playerData.$.serverId,
@@ -62,6 +65,3 @@ router.get("/", (req, res) => {
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
 });
-
-
-module.exports = router;

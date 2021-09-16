@@ -1,22 +1,23 @@
 // "/api/alliances"
-import { Alliances } from "../types/api";
 import express from "express";
-import axios from "axios";
-import XMLParserService from "../services/XMLParserService";
-import CacheService from "../services/CacheService";
+import fetch from "node-fetch";
+import { XMLParserService } from "../services/XMLParserService";
+import { CacheService } from "../services/CacheService";
+import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
+import { Alliances } from "../types/api";
 
 
-const router = express.Router();
+export const alliancesRouter = express.Router();
 const cache = new CacheService();
 
-router.get("/", (req, res) => {
+alliancesRouter.get("/", (req, res) => {
 
     if(cache.has(req.originalUrl))
         return res.json(cache.get(req.originalUrl));
 
-    axios.get(req.app.get("ogameAPI").alliances)
-        .then(response => response.data)
-        .then(xml => new XMLParserService().parse(xml))
+    fetch(OGAME_API_ENDPOINTS.alliances(TEMP_SERVER_ID))
+        .then(response => response.text())
+        .then(xml => new XMLParserService().parseToJson(xml))
         .then(json => {
             const orderedJSON: Alliances = {
                 serverID: json.alliances.$.serverId,
@@ -43,6 +44,3 @@ router.get("/", (req, res) => {
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
 });
-
-
-module.exports = router;

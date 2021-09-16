@@ -1,22 +1,25 @@
 // "/api/universes"
-import { Universes } from "../types/api";
 import express from "express";
-import axios from "axios";
-import XMLParserService from "../services/XMLParserService";
-import CacheService from "../services/CacheService";
+import fetch from "node-fetch";
+import { XMLParserService } from "../services/XMLParserService";
+import { CacheService } from "../services/CacheService";
+import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
+import { Universes } from "../types/api";
 
 
-const router = express.Router();
+export const universesRouter = express.Router();
 const cache = new CacheService();
 
-router.get("/", (req, res) => {
+universesRouter.get("/", (req, res) => {
     
     if(cache.has(req.originalUrl))
         return res.json(cache.get(req.originalUrl));
+
+    const URL = OGAME_API_ENDPOINTS.universes(TEMP_SERVER_ID);
         
-    axios.get(req.app.get("ogameAPI").universes)
-        .then(response => response.data)
-        .then(xml => new XMLParserService().parse(xml))
+    fetch(URL)
+        .then(response => response.text())
+        .then(xml => new XMLParserService().parseToJson(xml))
         .then(json => {
             const orderedJSON: Universes = {
                 serverID: json.universes.$.serverId,
@@ -30,6 +33,3 @@ router.get("/", (req, res) => {
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
 });
-
-
-module.exports = router;
