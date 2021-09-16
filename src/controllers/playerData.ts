@@ -2,7 +2,7 @@
 import { RequestHandler } from "express";
 import fetch from "node-fetch";
 import { XMLParserService } from "../services/XMLParserService";
-import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
+import { OGAME_API_ENDPOINTS } from "../constants/endpoints";
 import { PlayerData } from "../types/api";
 
 
@@ -14,7 +14,7 @@ const getPlayerData: RequestHandler = async (req, res) => {
         const id = q.id ? q.id : "1";
         // Instead of serving id=1, serve tree example with ?id=1
     
-        const URL = OGAME_API_ENDPOINTS.playerData(TEMP_SERVER_ID) + "?id=" + id;
+        const URL = OGAME_API_ENDPOINTS.playerData(req.serverID) + "?id=" + id;
 
         const response = await fetch(URL);
         const xml = await response.text();

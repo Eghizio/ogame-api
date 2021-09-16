@@ -2,14 +2,14 @@
 import { RequestHandler } from "express";
 import fetch from "node-fetch";
 import { XMLParserService } from "../services/XMLParserService";
-import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
+import { OGAME_API_ENDPOINTS } from "../constants/endpoints";
 import { Localization } from "../types/api";
 
 
 const getLocalization: RequestHandler = async (req, res) => {
 
     try{
-        const URL = OGAME_API_ENDPOINTS.localization(TEMP_SERVER_ID);
+        const URL = OGAME_API_ENDPOINTS.localization(req.serverID);
 
         const response = await fetch(URL);
         const xml = await response.text();

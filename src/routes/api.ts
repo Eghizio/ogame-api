@@ -9,6 +9,7 @@ import { UniverseController } from "../controllers/universe";
 import { UniversesController } from "../controllers/universes";
 import { cache } from "../middlewares/cache";
 import { TIME_MS } from "../constants/time";
+import { getServerID } from "../middlewares/getServerID";
 
 
 export const api = Router();
@@ -30,20 +31,22 @@ api.get("/", (req, res) => {
     });
 });
 
-api.get("/alliances", cache(TIME_MS.TEN_SECONDS), AlliancesController.getAlliances);
+api.get("/alliances", cache(TIME_MS.ONE_MINUTE), getServerID, AlliancesController.getAlliances);
 
 api.get("/highscore", HighscoreController.getHighscoreLegend);
-api.get("/highscore/players", cache(TIME_MS.TEN_SECONDS), HighscoreController.getHighscorePlayers);
-api.get("/highscore/alliances", cache(TIME_MS.TEN_SECONDS), HighscoreController.getHighscoreAlliances);
+api.get("/highscore/players", cache(TIME_MS.ONE_MINUTE), getServerID, HighscoreController.getHighscorePlayers);
+api.get("/highscore/alliances", cache(TIME_MS.ONE_MINUTE), getServerID, HighscoreController.getHighscoreAlliances);
 
-api.get("/localization", cache(TIME_MS.TEN_SECONDS), LocalizationController.getLocalization);
+api.get("/localization", cache(TIME_MS.ONE_MINUTE), getServerID, LocalizationController.getLocalization);
 
-api.get("/playerData", cache(TIME_MS.TEN_SECONDS), PlayerDataController.getPlayerData);
+api.get("/playerData", cache(TIME_MS.ONE_MINUTE), getServerID, PlayerDataController.getPlayerData);
 
-api.get("/players", cache(TIME_MS.TEN_SECONDS), PlayersController.getPlayers);
+api.get("/players", cache(TIME_MS.ONE_MINUTE), getServerID, PlayersController.getPlayers);
 
-api.get("/serverData", cache(TIME_MS.TEN_SECONDS), ServerDataController.getServerData);
+api.get("/serverData", cache(TIME_MS.ONE_MINUTE), getServerID, ServerDataController.getServerData);
 
-api.get("/universe", cache(TIME_MS.TEN_SECONDS), UniverseController.getUniverse);
+api.get("/universe", cache(TIME_MS.ONE_MINUTE), getServerID, UniverseController.getUniverse);
 
-api.get("/universes", cache(TIME_MS.TEN_SECONDS), UniversesController.getUniverses);
+api.get("/universes", cache(TIME_MS.ONE_MINUTE), getServerID, UniversesController.getUniverses);
+
+// health check, flush/omit cache(maybe middleware with query?), error middleware

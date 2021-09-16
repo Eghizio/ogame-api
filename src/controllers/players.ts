@@ -2,7 +2,7 @@
 import { RequestHandler } from "express";
 import fetch from "node-fetch";
 import { XMLParserService } from "../services/XMLParserService";
-import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
+import { OGAME_API_ENDPOINTS } from "../constants/endpoints";
 import { Players } from "../types/api";
 
 
@@ -11,7 +11,7 @@ const getPlayers: RequestHandler = async (req, res) => {
     try{
         // console.log(`Calling "${req.originalUrl}"...`); // need to npm morgan for logs
 
-        const URL = OGAME_API_ENDPOINTS.players(TEMP_SERVER_ID);
+        const URL = OGAME_API_ENDPOINTS.players(req.serverID);
 
         const response = await fetch(URL);
         const xml = await response.text();

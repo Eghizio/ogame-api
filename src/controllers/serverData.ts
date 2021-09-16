@@ -2,13 +2,13 @@
 import { RequestHandler } from "express";
 import fetch from "node-fetch";
 import { XMLParserService } from "../services/XMLParserService";
-import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
+import { OGAME_API_ENDPOINTS } from "../constants/endpoints";
 
 
 const getServerData: RequestHandler = async (req, res) => {
 
     try{
-        const URL = OGAME_API_ENDPOINTS.serverData(TEMP_SERVER_ID);
+        const URL = OGAME_API_ENDPOINTS.serverData(req.serverID);
 
         const response = await fetch(URL);
         const xml = await response.text();

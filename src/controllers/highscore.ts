@@ -2,7 +2,7 @@
 import { RequestHandler } from "express";
 import fetch from "node-fetch";
 import { XMLParserService } from "../services/XMLParserService";
-import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
+import { OGAME_API_ENDPOINTS } from "../constants/endpoints";
 
 
 const getHighscoreLegend: RequestHandler = (req, res) => {
@@ -30,7 +30,7 @@ const getHighscorePlayers: RequestHandler = async (req, res) => {
         const { query: q } = req;
         const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
 
-        const URL = OGAME_API_ENDPOINTS.highscore(TEMP_SERVER_ID) + "?category=1&type=" + type;
+        const URL = OGAME_API_ENDPOINTS.highscore(req.serverID) + "?category=1&type=" + type;
 
         const response = await fetch(URL);
         const xml = await response.text();
@@ -57,7 +57,7 @@ const getHighscoreAlliances: RequestHandler = async (req, res) => {
         const { query: q } = req;
         const type = (q.type && (Number(q.type) >= 0 && Number(q.type) <= 7)) ? q.type : "0";
     
-        const URL = OGAME_API_ENDPOINTS.highscore(TEMP_SERVER_ID) + "?category=2&type=" + type;
+        const URL = OGAME_API_ENDPOINTS.highscore(req.serverID) + "?category=2&type=" + type;
 
         const response = await fetch(URL);
         const xml = await response.text();
