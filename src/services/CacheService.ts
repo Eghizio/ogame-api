@@ -3,6 +3,7 @@ export class CacheService{
     cache: Map<string, any>
     constructor(){
         this.cache = new Map();
+        console.log("Created cache") //debug test
     }
 
     set(key: string, value: any){

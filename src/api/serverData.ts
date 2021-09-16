@@ -1,18 +1,14 @@
 // "/api/serverData"
 import express from "express";
 import fetch from "node-fetch";
+import { cache } from "../middlewares/cache";
 import { XMLParserService } from "../services/XMLParserService";
-import { CacheService } from "../services/CacheService";
 import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
 
 
 export const serverDataRouter = express.Router();
-const cache = new CacheService();
 
-serverDataRouter.get("/", (req, res) => {
-    
-    if(cache.has(req.originalUrl))
-        return res.json(cache.get(req.originalUrl));
+serverDataRouter.get("/", cache(0), (req, res) => {
         
     const URL = OGAME_API_ENDPOINTS.serverData(TEMP_SERVER_ID);
     
@@ -32,7 +28,6 @@ serverDataRouter.get("/", (req, res) => {
 
             return orderedJSON;
         })
-        .then(data => cache.set(req.originalUrl, data))
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
 });

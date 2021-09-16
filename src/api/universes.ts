@@ -1,19 +1,15 @@
 // "/api/universes"
 import express from "express";
 import fetch from "node-fetch";
+import { cache } from "../middlewares/cache";
 import { XMLParserService } from "../services/XMLParserService";
-import { CacheService } from "../services/CacheService";
 import { OGAME_API_ENDPOINTS, TEMP_SERVER_ID } from "../constants/endpoints";
 import { Universes } from "../types/api";
 
 
 export const universesRouter = express.Router();
-const cache = new CacheService();
 
-universesRouter.get("/", (req, res) => {
-    
-    if(cache.has(req.originalUrl))
-        return res.json(cache.get(req.originalUrl));
+universesRouter.get("/", cache(0), (req, res) => {
 
     const URL = OGAME_API_ENDPOINTS.universes(TEMP_SERVER_ID);
         
@@ -29,7 +25,6 @@ universesRouter.get("/", (req, res) => {
 
             return orderedJSON;
         })
-        .then(data => cache.set(req.originalUrl, data))
         .then(formatedJSON => res.json(formatedJSON))
         .catch(err => res.send(err));
 });
