@@ -4,7 +4,7 @@ import { createServer } from "./server";
 
 
 const init = async () => {
-    const PORT = process.env.PORT ? parseInt(process.env.PORT) : 2137;
+    const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3008;
 
     const server = createServer();
 
